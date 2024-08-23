@@ -12,8 +12,6 @@ app.use(morgan('tiny'))
 // parse application/json
 app.use(bodyParser.json())
 
-
-
 // app.get('/user' , (req,res)=>{
 //     res.json({success: true})
 // })

@@ -6,10 +6,11 @@ router.get('/', UserController.getHome)
 router.get("/:id", UserController.getOneUser)
 
 
-
 router.post ('/create', UserController.register)
 
+
 module.exports = router
+
 
 
 

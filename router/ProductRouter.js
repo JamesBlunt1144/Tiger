@@ -10,3 +10,4 @@ router.get('/all',ProductController.getAllProduct)
 
 
 module.exports = router
+
