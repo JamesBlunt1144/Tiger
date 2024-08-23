@@ -6,7 +6,7 @@ exports.getAllProduct = async (req,res)=>{
     const product = await knex.raw(`SELECT p.id , c.name as turkum, p.name , p.price, p.quantity, p.description FROM product as p 
     RIGHT JOIN category as c on p.category_id = c.id;`)
     
-    return res.json({success: true, user: product[0]})
+    return res.json({success: true, product: product[0]})
 }
 
     
