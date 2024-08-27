@@ -2,8 +2,7 @@ const Users = require('../models/UserModels')
 const bcrypto = require('bcryptjs')
 const { batchInsert } = require('../settings/db')
 const jwt = require('jsonwebtoken')
-const {secret} = require('../config/config')
-
+const secret = require('../config/config')
 
 exports.register = async(req,res)=>{
     const user = await Users.query().where('login',req.body.login).first()
@@ -24,19 +23,21 @@ exports.register = async(req,res)=>{
     return res.status(201).json({success:true})
 };
 
-exports.auth = async(req,res) => {
-    const user = await Users.query().where('login',req.body.login)
-    if(!user) {
-        return res
-        .status(404)
-        .json({success: false , err: "user-not-found"})
+// foydalanuvchi atarizatsiyasi
+exports.auth = async (req, res) => {
+        const user = await Users.query().findOne("login", req.body.login)
+    if (!user) {
+      return res.status(404).json({ success: false, err: "user-not-found" });
     }
-const payload = {
-    id: user.id,
- }
- const token = await jwt.sign(payload, secret , {expiresIn: "id"}) 
-return res.status(200).json({success: true, token: token})
-}
+    const checkPassword = await bcrypto.compareSync(req.body.password,user.password)
+    if (!checkPassword) {
+      return res.status(400).json({ success: false, err: "login-or-password-fail" });
+    }
+    const payload = { id: user.id };
+  
+    const token = await jwt.sign(payload, secret, { expiresIn: "1d" });
+    return res.status(200).json({ success: true, token: token });
+  };
 
 
 exports.getHome = (req, res) => {

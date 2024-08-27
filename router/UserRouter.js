@@ -8,7 +8,7 @@ router.get("/:id", UserController.getOneUser)
 
 router.post ('/create', UserController.register)
 
-router.get ('/auth',UserController.auth)
+router.post ('/auth',UserController.auth)
 
 module.exports = router
 
