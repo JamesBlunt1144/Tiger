@@ -8,6 +8,8 @@ router.get('/', (req,res)=>{
 
 router.get('/all',ProductController.getAllProduct)
 
+router.post('/create', ProductController.ProdCreate)
+
 
 module.exports = router
 
