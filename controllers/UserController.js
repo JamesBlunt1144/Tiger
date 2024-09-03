@@ -1,29 +1,30 @@
 const Users = require('../models/UserModels')
-const bcrypto = require('bcryptjs')
+const bcrypt = require('bcryptjs')
 const { batchInsert } = require('../settings/db')
 const jwt = require('jsonwebtoken')
 const secret = require('../config/config')
+const nodemailer = require('nodemailer');
 
-exports.register = async(req,res)=>{
-    const user = await Users.query().where('login',req.body.login).first()
-    if(user) {
-        return res.status(400).json({success: false, msg: "Foydalanuvchi mavjud"})
-    }
-    const salt = await bcrypto.genSaltSync(10)
-    const password = await bcrypto.hashSync(req.body.password, salt)
-    await Users.query().insert({    
-        name: req.body.name,
-        birthday: req.body.birthday,
-        passport_series: req.body.passport_series,
-        phone_number: req.body.phone_number,
-        login: req.body.login,
-        password: password,
+// exports.register = async(req,res)=>{
+//     const user = await Users.query().where('login',req.body.login).first()
+//     if(user) {
+//         return res.status(400).json({success: false, msg: "Foydalanuvchi mavjud"})
+//     }
+//     const salt = await bcrypto.genSaltSync(10)
+//     const password = await bcrypto.hashSync(req.body.password, salt)
+//     await Users.query().insert({    
+//         name: req.body.name,
+//         birthday: req.body.birthday,
+//         passport_series: req.body.passport_series,
+//         phone_number: req.body.phone_number,
+//         login: req.body.login,
+//         password: password,
         
-    })
-    return res.status(201).json({success:true})
-};
+//     })
+//     return res.status(201).json({success:true})
+// };
 
-// foydalanuvchi atarizatsiyasi
+// // foydalanuvchi atarizatsiyasi
 exports.auth = async (req, res) => {
         const user = await Users.query().findOne("login", req.body.login)
     if (!user) {
@@ -57,5 +58,86 @@ exports.getAllUsers = async (req, res) => {
 }
 
 
+// Ma'lumotni yangilash
+exports.put= async (req, res) => {
+     await Users.query().findOne('id',req.params.id).update(req.body) 
+     return res.status(201).json({success:true}) // Yangilangan ma'lumotni qaytarish
+    } 
+
+exports.delete = async(req, res)=> {
+    await Users.query().where('id', req.params.id).delete()
+    return res.status(200).json({massage: "Deleted"})
+}
+
+// 997531144S
+
+//-------------------------------------------------------------------------------------------------------------------------------------------
+
+// Email yuborish uchun konfiguratsiya
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'James.blunt.1144@gmail.com',
+        pass: '997531144' // Gmail parolingiz yoki app password
+    }
+});
+
+// Tasdiqlash kodi yaratish
+const generateVerificationCode = () => {
+    return Math.floor(100000 + Math.random() * 900000).toString(); // 6 raqamli tasdiqlash kodi
+};
+
+// Email yuborish funksiyasi
+const sendVerificationEmail = async (toEmail, verificationCode) => {
+    const mailOptions = {
+        from: 'James.blunt.1144@gmail.com',
+        to: toEmail,
+        subject: 'Email Tasdiqlash Kodingiz',
+        text: `Sizning tasdiqlash kodiz: ${verificationCode}. Iltimos, bu kodni ro'yxatdan o'tishda kiriting.`
+    };
+
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log('Email yuborildi:', toEmail);
+    } catch (error) {
+        console.error('Email yuborishda xato:', error);
+    }
+};
+
+exports.register = async (req, res) => {
+    try {
+        const { name, birthday, passport_series, phone_number, login, password, email } = req.body;
+
+        const existingUser = await Users.query().where('login', login).first();
+        if (existingUser) {
+            return res.status(400).json({ success: false, msg: 'Foydalanuvchi mavjud' });
+        }
+
+        // Parolni hash qilish
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        const verificationCode = generateVerificationCode();
+
+        await Users.query().insert({    
+            name,
+            birthday,
+            passport_series,
+            phone_number,
+            login,
+            password: hashedPassword,
+            email,
+            verification_code: verificationCode,
+            is_verified: false
+        });
+
+        await sendVerificationEmail(email, verificationCode);
+
+        return res.status(201).json({ success: true, msg: 'Ro\'yxatdan o\'tdingiz. Tasdiqlash kodi email orqali yuborildi.' });
+    } catch (error) {
+        console.error('Xato:', error);
+        return res.status(500).json({ success: false, msg: 'Serverda xato yuz berdi' });
+    }
+};
 
 

@@ -1,5 +1,4 @@
 const Products = require('../models/ProductModels')
-const Product = require('../models/ProductModels')
 
 exports.getAllProduct = async (req,res)=>{
     const knex = await Products.knex()
