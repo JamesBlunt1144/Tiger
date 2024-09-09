@@ -32,7 +32,6 @@ const nodemailer = require("nodemailer");
 //         phone_number: req.body.phone_number,
 //         login: req.body.login,
 //         password: password,
-<<<<<<< HEAD
         
 //     })
 //     return res.status(201).json({success:true})
@@ -96,73 +95,6 @@ exports.auth = async (req, res) => {
 
 
 
-=======
-
-//     })
-//     return res.status(201).json({success:true})
-// };
-
-// // foydalanuvchi atarizatsiyasi
-// exports.auth = async (req, res) => {
-//     const user = await Users.query().findOne("login", req.body.login);
-//     if (!user) {
-//         return res.status(404).json({ success: false, err: "user-not-found" });
-//     }
-//     const checkPassword = await bcrypto.compareSync(
-//         req.body.password,
-//         user.password
-//     );
-//     if (!checkPassword) {
-//         return res
-//             .status(400)
-//             .json({ success: false, err: "login-or-password-fail" });
-//     }
-//     const payload = { id: user.id };
-
-//     const token = await jwt.sign(payload, secret, { expiresIn: "1d" });
-//     return res.status(200).json({ success: true, token: token });
-// };
-
-exports.auth = async (req, res) => {
-    try {
-        // 1. Foydalanuvchi login bo'yicha bazadan topiladi
-        const user = await Users.query().findOne("login", req.body.login);
-        if (!user) {
-            return res
-                .status(404)
-                .json({ success: false, err: "user-not-found" });
-        }
-
-        // 2. Parolni tekshirish (asinxron usulda)
-        const checkPassword = await bcrypt.compare(
-            req.body.password,
-            user.password
-        );
-        if (!checkPassword) {
-            return res
-                .status(400)
-                .json({ success: false, err: "login-or-password-fail" });
-        }
-
-        // 3. JWT token yaratish
-        const payload = { id: user.id };
-        const token = await jwt.sign(payload, secret, { expiresIn: "1d" });
-
-        // 4. Muvaffaqiyatli javob qaytarish
-        return res.status(200).json({ success: true, token: token });
-    } catch (err) {
-        // Umumiy xatoliklarni ushlash
-        return res
-            .status(500)
-            .json({
-                success: false,
-                err: "server-error",
-                message: err.message,
-            });
-    }
-};
-
->>>>>>> 6ea1d9c2455db7d1b714cbc6d6007bcf597dc6d9
 exports.getHome = (req, res) => {
     return res.json({ success: true, msg: "Foydalanuvchi yaratish" });
 };
