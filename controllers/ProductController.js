@@ -30,6 +30,10 @@ exports.deleteProd = async(req, res)=> {
     return res.status(200).json({massage: "Deleted"})
 }
 
+exports.UpdateProd = async(req, res)=> {
+    await Products.query().where('id', req.params.id).update()
+    return res.status(200).json({massage: "Yangilandi"})
+}
 
 
 

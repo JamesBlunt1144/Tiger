@@ -10,6 +10,7 @@ router.get('/all',ProductController.getAllProduct)
 
 router.post ("/create", ProductController.ProdCreate)
 
+router.put ('/update', ProductController.UpdateProd)
 router.delete ('/delete/:id', ProductController.deleteProd )
 
 
