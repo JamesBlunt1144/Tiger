@@ -6,7 +6,7 @@ router.get('/', (req,res)=>{
 })
 
 
-router.get('/all', ClientController.getAllClients)
+// router.get('/all', ClientController.getAllClients)
 
 
 
