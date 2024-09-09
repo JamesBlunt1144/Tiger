@@ -3,6 +3,7 @@ const app = express()
 const bodyParser = require('body-parser')
 const userRouter = require('./router/UserRouter')
 const ProductRouter = require('./router/ProductRouter')
+const ClientRouter= require ('./router/ClientRouter')
 const cors = require('cors')
 const morgan = require('morgan')
 // parse application/x-www-form-urlencoded
@@ -21,7 +22,7 @@ app.use('/user', userRouter)
 
 app.use('/product', ProductRouter)
 
-
+app.use('/clients' , ClientRouter)
 
 
 

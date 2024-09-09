@@ -8,6 +8,10 @@ router.get('/', (req,res)=>{
 
 router.get('/all',ProductController.getAllProduct)
 
+router.post ("/create", ProductController.ProdCreate)
+
+router.delete ('/delete/:id', ProductController.deleteProd )
+
 
 module.exports = router
 
