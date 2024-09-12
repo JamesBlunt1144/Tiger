@@ -23,3 +23,11 @@ exports.delete = async(req, res)=> {
     await Categories.query().where('id', req.params.id).delete()
     return res.status(200).json({massage: "Deleted"})
 }
+
+
+exports.AllCategory = async (req,res)=>{
+    const knex = await Categories.knex()
+    const AllCategory = await knex.raw(`SELECT * FROM category`)
+    
+    return res.json({success: true, AllCategory: AllCategory[0]})
+}

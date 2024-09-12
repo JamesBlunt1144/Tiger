@@ -5,6 +5,10 @@ router.get('/', (req,res)=>{
     return res.json({success: true, msg: "Katigoriyalar ro`yhati"})
 })
 
+//CRUD / GET
+
+router.get ('/All', CategoryController.AllCategory)
+
 
 //CRUD / CREATE
 router.post('/create', CategoryController.CategoryCreate)
