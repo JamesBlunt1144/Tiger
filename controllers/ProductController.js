@@ -28,6 +28,7 @@ exports.ProdCreate = async (req, res) => {
     try {
         const newProduct = await Products.query().insert({
             // turkum: req.body.turkum, // Agar sizda mavjud bo'lsa
+            category_id: req.body.category_id,
             name: req.body.name,
             price: req.body.price,
             quantity: req.body.quantity,

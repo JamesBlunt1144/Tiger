@@ -1,5 +1,5 @@
 const Users = require('../models/UserModels')
-const bcrypt = require('bcryptjs')
+const bcrypto = require('bcryptjs')
 const { batchInsert } = require('../settings/db')
 const jwt = require('jsonwebtoken')
 const secret = require('../config/config')
@@ -25,6 +25,7 @@ const nodemailer = require('nodemailer');
 // };
 
 // // foydalanuvchi atarizatsiyasi
+
 exports.auth = async (req, res) => {
         const user = await Users.query().findOne("login", req.body.login)
     if (!user) {
@@ -74,6 +75,7 @@ exports.delete = async(req, res)=> {
 //-------------------------------------------------------------------------------------------------------------------------------------------
 
 // Email yuborish uchun konfiguratsiya
+
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -114,8 +116,8 @@ exports.register = async (req, res) => {
         }
 
         // Parolni hash qilish
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
+        const salt = await bcrypto.genSalt(10);
+        const hashedPassword = await bcrypto.hash(password, salt);
 
         const verificationCode = generateVerificationCode();
 
