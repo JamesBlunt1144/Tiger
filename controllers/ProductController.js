@@ -8,22 +8,6 @@ exports.getAllProduct = async (req,res)=>{
     return res.json({success: true, product: product[0]})
 }
 
-    
-// exports.ProdCreate = async(req,res) => {
-//     const [NewProduct] = await Products.query().insert({
-//     // turkum: req.body.turkum,
-//     name: req.body.name,
-//     price: req.body.price,
-//     quantity: req.body.quantity,
-//     description: req.body.description
-
-// })
-//     res.status(201).json(NewProduct);
-// }
-
-
-
-
 exports.ProdCreate = async (req, res) => {
     try {
         const newProduct = await Products.query().insert({
@@ -40,3 +24,32 @@ exports.ProdCreate = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 };
+
+
+exports.deleteProd = async(req, res)=> {
+    await Products.query().where('id', req.params.id).delete()
+    return res.status(200).json({massage: "Deleted"})
+}
+
+exports.UpdateProd = async(req, res)=> {
+    await Products.query().where('id', req.params.id).update()
+    return res.status(200).json({massage: "Yangilandi"})
+}
+
+
+
+// exports.ProdCreate = async (req, res) => {
+//     try {
+//         const newProduct = await Products.query().insert({
+//             // turkum: req.body.turkum, // Agar sizda mavjud bo'lsa
+//             name: req.body.name,
+//             price: req.body.price,
+//             quantity: req.body.quantity,
+//             description: req.body.description
+//         });
+
+//         res.status(201).json(newProduct);
+//     } catch (error) {
+//         res.status(400).json({ error: error.message });
+//     }
+// };
