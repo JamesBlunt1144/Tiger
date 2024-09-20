@@ -6,9 +6,13 @@ router.get('/', (req,res)=>{
 })
 
 
-// router.get('/all', ClientController.getAllClients)
+router.get('/all', ClientController.getAllClients)
 
+router.post('/create', ClientController.ClientCreate)
 
+router.put('/update/:id', ClientController.update)
+
+router.delete('/delete/:id', ClientController.delete)
 
 
 
@@ -17,3 +21,4 @@ router.get('/', (req,res)=>{
 
 
 module.exports = router
+

@@ -14,7 +14,7 @@ router.get ('/All', CategoryController.AllCategory)
 router.post('/create', CategoryController.CategoryCreate)
 
 //CRUD / UPDATE
-router.put ('/put/:id',CategoryController.put)
+router.put ('/update/:id',CategoryController.update)
 
 //CRUD / DELETE
 
