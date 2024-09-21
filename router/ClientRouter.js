@@ -14,8 +14,9 @@ router.put('/update/:id', ClientController.update)
 
 router.delete('/delete/:id', ClientController.delete)
 
+router.get('/search',ClientController.searchClients)
 
-
+router.get('/filterByDate', ClientController.filterClientsByDate)
 
 
 

@@ -48,7 +48,77 @@ exports.delete = async(req, res)=> {
     return res.status(200).json({massage: "Deleted"})
 }
 
+// Ma'lumotni qidirish
+//  http://localhost:3001/clients/search?searchTerm=2395895
+exports.searchClients = async (req, res) => {
+    const { searchTerm } = req.query;
 
+    if (!searchTerm) {
+        return res.status(400).json({
+            success: false,
+            message: 'Qidiruv uchun parametr ko\'rsatilmagan.'
+        });
+    }
+
+    try {
+        const knex = await Clients.knex();
+        const result = await knex.raw(`
+            SELECT id, Nick_name, Full_name, Passport, Date_of_birth, 
+                   Sex, Phone_num1, Phone_num2, Adress, DATE(created) as created 
+            FROM client 
+            WHERE Full_name LIKE ? OR Passport LIKE ? OR Phone_num1 LIKE ? OR Phone_num2 LIKE ?
+        `, [`%${searchTerm}%`, `%${searchTerm}%`, `%${searchTerm}%`, `%${searchTerm}%`]); // LIKE operatoridan foydalanish
+
+        return res.status(200).json({
+            success: true,
+            clients: result[0]
+        });
+    } catch (error) {
+        console.error('Error searching clients:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Mijozlarni qidirishda xato yuz berdi.',
+            error: error.message
+        });
+    }
+};
+
+
+// Ma'lumotni vaqt oraliqi bo`yicha filtrlash
+//  http://localhost:3001/clients/filterByDate?startDate=2024-09-20&endDate=2024-09-21
+exports.filterClientsByDate = async (req, res) => {
+    const { startDate, endDate } = req.query;
+
+    // Sanalar kiritilganligini tekshirish
+    if (!startDate || !endDate) {
+        return res.status(400).json({
+            success: false,
+            message: 'Iltimos, startDate va endDate parametrlarini ko\'rsating.'
+        });
+    }
+
+    try {
+        const knex = await Clients.knex();
+        const result = await knex.raw(`
+            SELECT id, Nick_name, Full_name, Passport, Date_of_birth, 
+                   Sex, Phone_num1, Phone_num2, Adress, DATE_FORMAT(created, '%d/%m/%Y') as created 
+            FROM client 
+            WHERE created BETWEEN ? AND DATE_ADD(?, INTERVAL 1 DAY)
+        `, [startDate, endDate]); // EndDate'ga 1 kun qo'shish
+
+        return res.status(200).json({
+            success: true,
+            clients: result[0]
+        });
+    } catch (error) {
+        console.error('Error filtering clients by date:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Mijozlarni sanaga ko\'ra filtrlashda xato yuz berdi.',
+            error: error.message
+        });
+    }
+};
 
 
 
