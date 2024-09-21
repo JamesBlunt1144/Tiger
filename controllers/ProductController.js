@@ -1,4 +1,6 @@
 const Products = require('../models/ProductModels')
+const XLSX = require('xlsx')
+
 
 exports.getAllProduct = async (req,res)=>{
     const knex = await Products.knex()
@@ -69,3 +71,39 @@ exports.searchProducts = async (req, res) => {
         });
     }
 };
+
+
+exports.exportProductsToExcel = async (req, res) => {
+    try {
+        const knex = await Products.knex();
+        const result = await knex.raw(`
+            SELECT p.id, c.name AS turkum, p.name, p.price, p.quantity, p.description 
+            FROM product AS p 
+            RIGHT JOIN category AS c ON p.category_id = c.id;
+        `);
+        
+        const products = result[0];
+
+        // Excel faylini yaratish
+        const worksheet = XLSX.utils.json_to_sheet(products);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Mahsulotlar");
+
+        // Faylni yaratish va uzatish
+        const fileName = 'mahsulotlar.xlsx';
+        XLSX.writeFile(workbook, fileName);
+        
+        // Response orqali faylni uzatish
+        res.download(fileName, (err) => {
+            if (err) {
+                console.error(err);
+                res.status(500).send("Faylni yuklab olishda xato yuz berdi.");
+            }
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: "Xatolik yuz berdi" });
+    }
+};
+
+

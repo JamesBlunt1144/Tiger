@@ -11,8 +11,10 @@ router.get('/all',ProductController.getAllProduct)
 router.post ("/create", ProductController.ProdCreate)
 
 router.put ('/update/:id', ProductController.UpdateProd)
+
 router.delete ('/delete/:id', ProductController.deleteProd )
 
+router.get('/exportToExcel' , ProductController.exportProductsToExcel)
 
 
 

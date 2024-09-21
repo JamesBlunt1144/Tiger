@@ -21,7 +21,7 @@ router.put ('/update/:id',CategoryController.update)
 router.delete ('/delete/:id', CategoryController.delete)
 
 
-
+router.get('/exportToExcel', CategoryController.exportCategoryToExcel)
 
 
 
