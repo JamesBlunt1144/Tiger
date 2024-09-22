@@ -5,6 +5,7 @@ const userRouter = require('./router/UserRouter')
 const ProductRouter = require('./router/ProductRouter')
 const ClientRouter= require ('./router/ClientRouter')
 const CategoryRouter = require('./router/CategoryRouter')
+const SaleRouter = require('./router/SaleRouter')
 const cors = require('cors')
 const morgan = require('morgan')
 
@@ -28,6 +29,7 @@ app.use('/clients' , ClientRouter)
 
 app.use('/category', CategoryRouter )
 
+app.use('/sale', SaleRouter)
 
 
 app.listen(3001, ()=> {

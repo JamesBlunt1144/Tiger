@@ -4,8 +4,10 @@ const XLSX = require('xlsx')
 
 exports.getAllProduct = async (req,res)=>{
     const knex = await Products.knex()
-    const product = await knex.raw(`SELECT p.id , c.name as turkum, p.name , p.price, p.quantity, p.description FROM product as p 
-    RIGHT JOIN category as c on p.category_id = c.id;`)
+    const product = await knex.raw(`SELECT s.customer_name,p.id , c.name as turkum, p.name , p.price, p.quantity, p.description 
+    FROM product as p 
+    RIGHT JOIN category as c on p.category_id = c.id
+    inner join sales as s on s.product_id = p.category_id`)
     
     return res.json({success: true, product: product[0]})
 }
