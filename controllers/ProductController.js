@@ -4,11 +4,10 @@ const XLSX = require('xlsx')
 
 exports.getAllProduct = async (req,res)=>{
     const knex = await Products.knex()
-    const product = await knex.raw(`SELECT s.customer_name,p.id , c.name as turkum, p.name , p.price, p.quantity, p.description 
-    FROM product as p 
-    RIGHT JOIN category as c on p.category_id = c.id
-    inner join sales as s on s.product_id = p.category_id`)
-    
+    const product = await knex.raw(`SELECT p.id , c.name as turkum, p.name , p.price, 
+    p.quantity, p.description FROM product as p 
+    RIGHT JOIN category as c on p.category_id = c.id`
+    )
     return res.json({success: true, product: product[0]})
 }
 
@@ -57,7 +56,7 @@ exports.searchProducts = async (req, res) => {
             SELECT p.id, c.name AS turkum, p.name, p.price, p.quantity, p.description 
             FROM product AS p 
             LEFT JOIN category AS c ON p.category_id = c.id 
-            WHERE p.name LIKE ? OR turkum LIKE ?
+            WHERE p.name LIKE ? OR c.name LIKE ?
         `, [`%${searchTerm}%`, `%${searchTerm}%`]); // Qidiruv shartlari
 
         return res.status(200).json({
@@ -107,5 +106,4 @@ exports.exportProductsToExcel = async (req, res) => {
         res.status(500).json({ success: false, message: "Xatolik yuz berdi" });
     }
 };
-
 

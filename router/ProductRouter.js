@@ -16,7 +16,7 @@ router.delete ('/delete/:id', ProductController.deleteProd )
 
 router.get('/exportToExcel' , ProductController.exportProductsToExcel)
 
-
+router.get('/search', ProductController.searchProducts)
 
 module.exports = router
 
