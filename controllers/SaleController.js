@@ -32,33 +32,79 @@ const { limit } = require('../settings/db');
 //     }
 // };
 
+// exports.createNewSale = async (req, res) => {
+//     const { product_id, quantity, client_id } = req.body;
+
+//     try {
+//         const knex = await Sales.knex();
+        
+//         // Mahsulot narxini olish
+//         const product = await knex('product').select('price').where('id', product_id).first();
+        
+//         if (!product) {
+//             return res.status(404).json({ success: false, message: "Product not found." });
+//         }
+
+//         const totalPrice = product.price * quantity; // Jami summa hisoblash
+
+//         // Yangi sotuvni qo'shish
+//         await knex('sales').insert({
+//             product_id,
+//             quantity,
+//             client_id,
+//             price: totalPrice // Jami summani saqlash
+//         });
+
+//         return res.json({ success: true, message: "Sale recorded successfully." });
+//     } catch (error) {
+//         console.error("Error creating sale:", error);
+//         return res.status(500).json({ success: false, message: "Error creating sale." });
+//     }
+// };
+
 exports.createNewSale = async (req, res) => {
-    const { product_id, quantity, customer_name } = req.body;
+    const { product_id, quantity, client_id } = req.body;
+
+    // Kiruvchi ma'lumotlarni tekshirish
+    if (!product_id || !quantity || !client_id) {
+        return res.status(400).json({ success: false, message: "Zarur maydonlar etishmayapti." });
+    }
 
     try {
         const knex = await Sales.knex();
         
-        // Mahsulot narxini olish
-        const product = await knex('product').select('price').where('id', product_id).first();
+        // Mahsulot ma'lumotlarini olish
+        const product = await knex('product').select('price', 'quantity').where('id', product_id).first();
         
         if (!product) {
-            return res.status(404).json({ success: false, message: "Product not found." });
+            return res.status(404).json({ success: false, message: "Mahsulot topilmadi." });
         }
 
-        const totalPrice = product.price * quantity; // Jami summa hisoblash
+        // Narx va mavjud zaxirani tekshirish
+        if (product.price <= 0) {
+            return res.status(400).json({ success: false, message: "Noto'g'ri mahsulot narxi." });
+        }
+        if (product.quantity < quantity) {
+            return res.status(400).json({ success: false, message: "Mavjud zaxira etarli emas." });
+        }
+
+        const totalPrice = product.price * quantity; // Jami narxni hisoblash
 
         // Yangi sotuvni qo'shish
         await knex('sales').insert({
             product_id,
             quantity,
-            customer_name,
-            price: totalPrice // Jami summani saqlash
+            client_id,
+            price: totalPrice // Jami narxni saqlash
         });
 
-        return res.json({ success: true, message: "Sale recorded successfully." });
+        // Mahsulot sonini yangilash
+        await knex('product').where('id', product_id).decrement('quantity', quantity);
+
+        return res.json({ success: true, message: "Sotuv muvaffaqiyatli qayd etildi." });
     } catch (error) {
-        console.error("Error creating sale:", error);
-        return res.status(500).json({ success: false, message: "Error creating sale." });
+        console.error("Sotuvni yaratishda xato:", error);
+        return res.status(500).json({ success: false, message: "Sotuvni yaratishda xato." });
     }
 };
 
