@@ -1,67 +1,6 @@
 const Sales = require('../models/SaleModels');
 const { limit } = require('../settings/db');
 
-// exports.createNewSale = async (req, res) => {
-//     const { productId, quantity, customerName } = req.body;
-
-//     // Ma'lumotlar to'g'riligini tekshirish
-//     if (!productId || !quantity || !customerName) {
-//         return res.status(400).json({ success: false, message: "All fields are required." });
-//     }
-
-//     try {
-//         const knex = await Sales.knex();
-
-//         // Yangi sotuvni saqlash
-//         await knex('sales').insert({
-//             product_id: productId,
-//             quantity: quantity,
-//             customer_name: customerName,
-//             sale_date: new Date() // Sotuv sanasini qo'shish
-//         });
-
-//         // Mahsulot miqdorini yangilash
-//         await knex('product')
-//             .where({ id: productId })
-//             .decrement('quantity', quantity);
-
-//         return res.json({ success: true, message: "Sale recorded successfully." });
-//     } catch (error) {
-//         console.error("Error creating new sale:", error);
-//         return res.status(500).json({ success: false, message: "Error creating new sale." });
-//     }
-// };
-
-// exports.createNewSale = async (req, res) => {
-//     const { product_id, quantity, client_id } = req.body;
-
-//     try {
-//         const knex = await Sales.knex();
-        
-//         // Mahsulot narxini olish
-//         const product = await knex('product').select('price').where('id', product_id).first();
-        
-//         if (!product) {
-//             return res.status(404).json({ success: false, message: "Product not found." });
-//         }
-
-//         const totalPrice = product.price * quantity; // Jami summa hisoblash
-
-//         // Yangi sotuvni qo'shish
-//         await knex('sales').insert({
-//             product_id,
-//             quantity,
-//             client_id,
-//             price: totalPrice // Jami summani saqlash
-//         });
-
-//         return res.json({ success: true, message: "Sale recorded successfully." });
-//     } catch (error) {
-//         console.error("Error creating sale:", error);
-//         return res.status(500).json({ success: false, message: "Error creating sale." });
-//     }
-// };
-
 exports.createNewSale = async (req, res) => {
     const { product_id, quantity, client_id } = req.body;
 
@@ -120,5 +59,32 @@ exports.getSalesHistory = async (req, res) => {
     } catch (error) {
         console.error("Error fetching sales history:", error);
         return res.status(500).json({ success: false, message: "Error fetching sales history." });
+    }
+};
+
+
+exports.getAllSalesForToday = async (req, res) => {
+    try {
+        const knex = await Sales.knex();
+        
+        // Bugungi sanani olish
+        const today = new Date();
+        const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+        const endOfDay = new Date(today.setHours(23, 59, 59, 999));
+
+        // Bugun sotilgan mahsulotlarni olish
+        const sales = await knex('sales')
+            .select('product_id', 'quantity', 'price', 'client_id', 'Status', 'sale_date')
+            .where('sale_date', '>=', startOfDay)
+            .andWhere('sale_date', '<=', endOfDay);
+
+        if (sales.length === 0) {
+            return res.json({ success: true, message: "Bugun sotilgan mahsulotlar mavjud emas.", sales: [] });
+        }
+
+        return res.json({ success: true, sales });
+    } catch (error) {
+        console.error("Sotuvlarni olishda xato:", error.message, error.stack);
+        return res.status(500).json({ success: false, message: "Sotuvlarni olishda xato." });
     }
 };

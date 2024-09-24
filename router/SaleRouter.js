@@ -6,6 +6,6 @@ router.post('/newsale', SaleController.createNewSale)
 
 router.get('/history', SaleController.getSalesHistory)
 
-
+router.get('/getSelaForToday', SaleController.getAllSalesForToday)
 
 module.exports = router
