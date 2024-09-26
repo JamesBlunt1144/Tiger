@@ -107,3 +107,7 @@ exports.exportProductsToExcel = async (req, res) => {
     }
 };
 
+exports.getOneProduct = async (req, res) => {
+    const product = await Products.query().where("id", req.params.id).first();
+    return res.json({ success: true, product: product });
+};

@@ -27,12 +27,17 @@ exports.delete = async(req, res)=> {
 }
 
 // Ma'lumotni olish
-exports.AllCategory = async (req,res)=>{
-    const knex = await Categories.knex()
-    const AllCategory = await knex.raw(`SELECT * FROM category`)
-    
-    return res.json({success: true, AllCategory: AllCategory[0]})
-}
+exports.AllCategory = async (req, res) => {
+    const knex = await Categories.knex();
+    try {
+        const AllCategory = await knex('category').select('*');
+        return res.json({ success: true, AllCategory });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ success: false, message: 'Xato yuz berdi.' });
+    }
+};
+
 
 // Ma`lumotni excelga ko`chirish
 exports.exportCategoryToExcel = async (req, res) => {
@@ -62,5 +67,26 @@ exports.exportCategoryToExcel = async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false, message: "Xatolik yuz berdi" });
+    }
+};
+
+
+exports.searchCategory = async (req, res) => {
+    const knex = await Categories.knex();
+    const { name } = req.query; // URL'dan name parametrini oling
+
+    if (!name) {
+        return res.status(400).json({ success: false, message: 'Iltimos, name parametrini kiriting.' });
+    }
+
+    try {
+        const searchResults = await knex('category')
+            .where('name', 'like', `%${name}%`) // name bo‘yicha izlash
+            .select('*');
+        
+        return res.json({ success: true, searchResults });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ success: false, message: 'Xato yuz berdi.' });
     }
 };

@@ -18,5 +18,6 @@ router.get('/exportToExcel' , ProductController.exportProductsToExcel)
 
 router.get('/search', ProductController.searchProducts)
 
+router.get ('/:id', ProductController.getOneProduct )
 module.exports = router
 

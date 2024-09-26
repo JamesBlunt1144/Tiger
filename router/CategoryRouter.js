@@ -20,10 +20,11 @@ router.put ('/update/:id',CategoryController.update)
 
 router.delete ('/delete/:id', CategoryController.delete)
 
-
+// Ma`lumotni exselga yuklash
 router.get('/exportToExcel', CategoryController.exportCategoryToExcel)
 
-
+// Ma`lumotni izlash
+router.get('/search', CategoryController.searchCategory)
 
 
 

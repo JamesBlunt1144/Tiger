@@ -2,11 +2,16 @@ const Sales = require('../models/SaleModels');
 const { limit } = require('../settings/db');
 
 exports.createNewSale = async (req, res) => {
-    const { product_id, quantity, client_id } = req.body;
+    const { product_id, quantity , client_id } = req.body;
 
     // Kiruvchi ma'lumotlarni tekshirish
     if (!product_id || !quantity || !client_id) {
         return res.status(400).json({ success: false, message: "Zarur maydonlar etishmayapti." });
+    }
+
+    // Quantity manfiy emasligini tekshirish
+    if (quantity <= 0) {
+        return res.status(400).json({ success: false, message: "Quantity manfiy yoki nol bo'lishi mumkin emas." });
     }
 
     try {
@@ -88,3 +93,5 @@ exports.getAllSalesForToday = async (req, res) => {
         return res.status(500).json({ success: false, message: "Sotuvlarni olishda xato." });
     }
 };
+
+
