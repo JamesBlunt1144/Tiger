@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 const Clients = require('../models/ClientModels')
+=======
+    const Clients = require('../models/ClientModels')
+>>>>>>> 6d31e71b9e398a179608444ae44024f727d9f223
 
 // Ma'lumotni olish    
 exports.getAllClients = async (req, res) => {
